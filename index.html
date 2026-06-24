@@ -11,27 +11,157 @@
         tailwind.config = { darkMode: 'class' };
     </script>
 
-    <!-- Load React and ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Modern Import Map for React ES Modules -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime"
+      }
+    }
+    </script>
     
     <!-- Load Babel to transpile JSX in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
-    <script>
-        // Configure Babel to use the classic JSX runtime (React.createElement)
-        Babel.registerPreset('react-classic', {
-            presets: [
-                [Babel.availablePresets['react'], { runtime: 'classic' }]
-            ]
-        });
+
+    <script type="application/json" id="app-data">
+{
+  "id": "root",
+  "label": "System Modules",
+  "type": "root",
+  "info": "Main application system",
+  "children": [
+    {
+      "id": "m1",
+      "label": "Customer Search",
+      "info": "Module for finding and filtering customer accounts.",
+      "children": [
+        {
+          "id": "m1-f1",
+          "label": "Search with multiple filters",
+          "info": "Allows complex queries to find exact customer matches."
+        },
+        {
+          "id": "m1-f2",
+          "label": "View only premise(Account level dropdown): Site ID should be visible",
+          "info": "Dropdown configuration for premises."
+        },
+        {
+          "id": "m1-f3",
+          "label": "View Premise button for Account level refs, should display premises and relavant service covers available for the refs",
+          "info": "Action button to view detailed service coverages."
+        },
+        {
+          "id": "m1-f4",
+          "label": "Pagination, selecting no of rows visible per page and check does navigate to next page",
+          "info": "Table pagination controls."
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "label": "Create Interaction",
+      "info": "Module for initiating and managing customer interactions.",
+      "children": [
+        {
+          "id": "m2-f1",
+          "label": "View Open Interactions Popup",
+          "info": "Displays currently active/open interactions in a modal."
+        },
+        {
+          "id": "m2-f2",
+          "label": "Open interactions dropdown for details",
+          "info": "Select an interaction to see full details."
+        },
+        {
+          "id": "m2-f3",
+          "label": "Dont create interaction",
+          "info": "Cancel or bypass interaction creation."
+        },
+        {
+          "id": "m2-f4",
+          "label": "Amend interaction",
+          "info": "Edit an existing interaction record."
+        },
+        {
+          "id": "m2-f5",
+          "label": "Create interaction",
+          "info": "Finalize and save a new interaction."
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "label": "Customer 360",
+      "info": "Comprehensive view of all customer-related data.",
+      "children": [
+        {
+          "id": "m3-f1",
+          "label": "View all details for Location/Bill To",
+          "info": "Location and billing information overview."
+        },
+        {
+          "id": "m3-f2",
+          "label": "Edit Contacts ( Depending countries Multi Contact will be available IT/PT)",
+          "info": "Manage customer contact points based on region."
+        },
+        {
+          "id": "m3-f3",
+          "label": "Customer Name fully visible and Business logo check",
+          "info": "UI verification for branding and names."
+        },
+        {
+          "id": "m3-f4",
+          "label": "Touchpoints details need to compare with Icabs",
+          "info": "Data verification step against external system."
+        },
+        {
+          "id": "m3-f5",
+          "label": "Navigation to relevant accounts ( Separate Scenario needed)",
+          "info": "Links to related organizational accounts."
+        },
+        {
+          "id": "m3-f6",
+          "label": "Invoice Tab",
+          "info": "Financial interaction and billing histories.",
+          "children": [
+            {
+              "id": "m3-f6-s1",
+              "label": "Check Single invoice by View/Send invoice button",
+              "info": "Action to preview or email a specific invoice."
+            },
+            {
+              "id": "m3-f6-s2",
+              "label": "Check Dispute invoice icon when dispute invoice workflow creat...",
+              "info": "Visual indicator for ongoing disputes."
+            },
+            {
+              "id": "m3-f6-s3",
+              "label": "Check Single Credit Notes by View/Send Credit notes button",
+              "info": "Action to preview or email specific credit notes."
+            },
+            {
+              "id": "m3-f6-s4",
+              "label": "Check Send Multiple Credit Notes",
+              "info": "Batch processing for credit notes."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
     </script>
 </head>
 <body class="overflow-hidden">
     <div id="root"></div>
 
-    <script type="text/babel" data-presets="react-classic">
-        const { useState, useEffect, useRef, useMemo } = React;
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
 
+        // --- Inline SVG Icons ---
         const Icon = ({ children, size = 24, className = '' }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
         );
@@ -54,57 +184,12 @@
         const Download = (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></Icon>;
         const Trash = (p) => <Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></Icon>;
         const Search = (p) => <Icon {...p}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
-        const Github = (p) => <Icon {...p}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></Icon>;
-        const CloudDownload = (p) => <Icon {...p}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></Icon>;
-        const CloudUpload = (p) => <Icon {...p}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></Icon>;
+        
+        // Chat Icons
         const MessageCircle = (p) => <Icon {...p}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></Icon>;
         const Send = (p) => <Icon {...p}><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></Icon>;
         const Bot = (p) => <Icon {...p}><rect width="18" height="14" x="3" y="8" rx="2"/><path d="M12 5a3 3 0 1 0-3 3"/><line x1="9" x2="9" y1="18" y2="18"/><line x1="15" x2="15" y1="18" y2="18"/></Icon>;
         const Settings = (p) => <Icon {...p}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></Icon>;
-
-        const defaultData = {
-          id: 'root', label: 'System Modules', type: 'root', info: 'Main application system',
-          children: [
-            {
-              id: 'm1', label: 'Customer Search', info: 'Module for finding and filtering customer accounts.',
-              children: [
-                { id: 'm1-f1', label: 'Search with multiple filters', info: 'Allows complex queries to find exact customer matches.' },
-                { id: 'm1-f2', label: 'View only premise(Account level dropdown): Site ID should be visible', info: 'Dropdown configuration for premises.' },
-                { id: 'm1-f3', label: 'View Premise button for Account level refs, should display premises and relavant service covers available for the refs', info: 'Action button to view detailed service coverages.' },
-                { id: 'm1-f4', label: 'Pagination, selecting no of rows visible per page and check does navigate to next page', info: 'Table pagination controls.' }
-              ]
-            },
-            {
-              id: 'm2', label: 'Create Interaction', info: 'Module for initiating and managing customer interactions.',
-              children: [
-                { id: 'm2-f1', label: 'View Open Interactions Popup', info: 'Displays currently active/open interactions in a modal.' },
-                { id: 'm2-f2', label: 'Open interactions dropdown for details', info: 'Select an interaction to see full details.' },
-                { id: 'm2-f3', label: 'Dont create interaction', info: 'Cancel or bypass interaction creation.' },
-                { id: 'm2-f4', label: 'Amend interaction', info: 'Edit an existing interaction record.' },
-                { id: 'm2-f5', label: 'Create interaction', info: 'Finalize and save a new interaction.' }
-              ]
-            },
-            {
-              id: 'm3', label: 'Customer 360', info: 'Comprehensive view of all customer-related data.',
-              children: [
-                { id: 'm3-f1', label: 'View all details for Location/Bill To', info: 'Location and billing information overview.' },
-                { id: 'm3-f2', label: 'Edit Contacts ( Depending countries Multi Contact will be available IT/PT)', info: 'Manage customer contact points based on region.' },
-                { id: 'm3-f3', label: 'Customer Name fully visible and Business logo check', info: 'UI verification for branding and names.' },
-                { id: 'm3-f4', label: 'Touchpoints details need to compare with Icabs', info: 'Data verification step against external system.' },
-                { id: 'm3-f5', label: 'Navigation to relevant accounts ( Separate Scenario needed)', info: 'Links to related organizational accounts.' },
-                { 
-                  id: 'm3-f6', label: 'Invoice Tab', info: 'Financial interaction and billing histories.',
-                  children: [
-                    { id: 'm3-f6-s1', label: 'Check Single invoice by View/Send invoice button', info: 'Action to preview or email a specific invoice.' },
-                    { id: 'm3-f6-s2', label: 'Check Dispute invoice icon when dispute invoice workflow creat...', info: 'Visual indicator for ongoing disputes.' },
-                    { id: 'm3-f6-s3', label: 'Check Single Credit Notes by View/Send Credit notes button', info: 'Action to preview or email specific credit notes.' },
-                    { id: 'm3-f6-s4', label: 'Check Send Multiple Credit Notes', info: 'Batch processing for credit notes.' }
-                  ]
-                }
-              ]
-            }
-          ]
-        };
 
         const NODE_WIDTH = 320;
         const NODE_HEIGHT = 85;
@@ -112,35 +197,41 @@
         const GAP_Y = 24;
 
         function App() {
-          const [data, setData] = useState(() => {
-            const saved = localStorage.getItem('1view_map_data_cache');
-            if (saved) {
-              try { return JSON.parse(saved); } catch (e) { }
-            }
-            return defaultData;
-          });
-          
-          const [expandedNodes, setExpandedNodes] = useState(new Set(['root', 'm1', 'm2', 'm3', 'm3-f6']));
-          const [isDarkMode, setIsDarkMode] = useState(false);
-          const [fileHandle, setFileHandle] = useState(null); // For Direct Local File Sync
-          
           // --- Custom UI Alert / Confirm System ---
           const [toast, setToast] = useState('');
           const [confirmAction, setConfirmAction] = useState(null);
 
           const showToast = (msg) => {
             setToast(msg);
-            setTimeout(() => setToast(''), 4000); // Auto-hide after 4 seconds
+            setTimeout(() => setToast(''), 4000);
           };
 
+          // --- Load Data from embedded HTML script tag ---
+          const [data, setData] = useState(() => {
+            try {
+              const dataElement = document.getElementById('app-data');
+              if (dataElement && dataElement.textContent.trim()) {
+                return JSON.parse(dataElement.textContent);
+              }
+            } catch (e) {
+              console.error("Failed to parse embedded data", e);
+              showToast("Error loading embedded application data.");
+            }
+            return { id: 'root', label: 'Empty Application', children: [] };
+          });
+
+          const [expandedNodes, setExpandedNodes] = useState(new Set(['root', 'm1', 'm2', 'm3', 'm3-f6']));
+          const [isDarkMode, setIsDarkMode] = useState(false);
+          
           const [transform, setTransform] = useState({ x: 100, y: 100, scale: 0.85 });
           const [isDragging, setIsDragging] = useState(false);
           const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
           const containerRef = useRef(null);
-          const fileInputRef = useRef(null);
-
+          
+          // Self-Modifying App States
           const [showDataEditor, setShowDataEditor] = useState(false);
           const [jsonInput, setJsonInput] = useState('');
+          const [htmlFileHandle, setHtmlFileHandle] = useState(null);
           
           const [editingNode, setEditingNode] = useState(null);
           const [editForm, setEditForm] = useState({ label: '', info: '' });
@@ -154,15 +245,6 @@
           const [expandedCountries, setExpandedCountries] = useState({});
           const [editingAccount, setEditingAccount] = useState(null);
           const [newAccountInputs, setNewAccountInputs] = useState({});
-
-          // GitHub / Bitbucket Sync States
-          const [repoUrl, setRepoUrl] = useState(() => localStorage.getItem('1view_repo_url') || '');
-          const [repoUser, setRepoUser] = useState(() => localStorage.getItem('1view_repo_user') || '');
-          const [repoToken, setRepoToken] = useState(() => localStorage.getItem('1view_repo_token') || '');
-          const [repoBranch, setRepoBranch] = useState(() => localStorage.getItem('1view_repo_branch') || 'main');
-          const [repoFilePath, setRepoFilePath] = useState(() => localStorage.getItem('1view_repo_path') || '1View Map Data.txt');
-          const [syncStatus, setSyncStatus] = useState('');
-          const [isSyncing, setIsSyncing] = useState(false);
 
           // Search States
           const [searchQuery, setSearchQuery] = useState('');
@@ -180,42 +262,12 @@
           const [showApiKeySetup, setShowApiKeySetup] = useState(!localStorage.getItem('gemini_api_key'));
           const chatEndRef = useRef(null);
 
-          // Auto-fetch hosted file on initial load (For GitHub Pages integration)
-          useEffect(() => {
-            const loadHostedData = async () => {
-              try {
-                const res = await fetch('./1View Map Data.txt?t=' + new Date().getTime());
-                if (res.ok) {
-                  const text = await res.text();
-                  const parsed = JSON.parse(text);
-                  setData(parsed);
-                  setJsonInput(JSON.stringify(parsed, null, 2));
-                  console.log("Successfully auto-loaded hosted 1View Map Data.txt");
-                }
-              } catch (e) {
-                console.log("Hosted 1View Map Data.txt not found. Falling back to local cache/defaults.");
-              }
-            };
-            loadHostedData();
-          }, []);
-
-          // Save settings and data to localStorage
-          useEffect(() => {
-            localStorage.setItem('1view_map_data_cache', JSON.stringify(data));
-          }, [data]);
-
-          useEffect(() => {
-            localStorage.setItem('1view_repo_url', repoUrl);
-            localStorage.setItem('1view_repo_user', repoUser);
-            localStorage.setItem('1view_repo_token', repoToken);
-            localStorage.setItem('1view_repo_branch', repoBranch);
-            localStorage.setItem('1view_repo_path', repoFilePath);
-          }, [repoUrl, repoUser, repoToken, repoBranch, repoFilePath]);
-
+          // Scroll to bottom of chat
           useEffect(() => {
             if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
           }, [chatMessages, isAiTyping, isChatOpen]);
 
+          // Keyboard listeners for Panning
           useEffect(() => {
             const handleKeyDown = (e) => {
               if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
@@ -238,6 +290,7 @@
             return () => window.removeEventListener('keydown', handleKeyDown);
           }, []);
 
+          // Mouse wheel listener for zooming
           useEffect(() => {
             const container = containerRef.current;
             const handleWheel = (e) => {
@@ -252,6 +305,7 @@
             }
           }, []);
 
+          // Click outside search listener
           useEffect(() => {
             const handleClickOutside = (e) => {
               if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -262,197 +316,129 @@
             return () => document.removeEventListener('mousedown', handleClickOutside);
           }, []);
 
-
-          // --- File System Access API (Direct Local Sync) ---
-          const linkLocalFile = async () => {
+          // --- Self-Modifying HTML File System Logic ---
+          const linkLocalHtmlFile = async () => {
             try {
               if (!window.showOpenFilePicker) {
-                showToast("Your browser does not support Direct Local Sync. Please use Google Chrome or Microsoft Edge.");
+                showToast("Your browser does not support Direct File Sync. Please use Google Chrome or Microsoft Edge.");
                 return;
               }
               const [handle] = await window.showOpenFilePicker({
-                types: [{ description: 'Text/JSON Files', accept: { 'text/plain': ['.txt', '.json'] } }],
+                types: [{ description: 'HTML App Files', accept: { 'text/html': ['.html', '.htm'] } }],
               });
-              setFileHandle(handle);
-              
-              const file = await handle.getFile();
-              const content = await file.text();
-              const parsed = JSON.parse(content);
-              setData(parsed);
-              setJsonInput(JSON.stringify(parsed, null, 2));
-              showToast(`Successfully linked and loaded: ${handle.name}`);
+              setHtmlFileHandle(handle);
+              showToast(`App actively linked to: ${handle.name}`);
             } catch (error) {
               if (error.name !== 'AbortError') {
                 console.error(error);
-                showToast("Error linking file. Make sure it contains valid JSON data.");
+                showToast("Error linking file.");
               }
             }
           };
 
-          const saveToLinkedFile = async () => {
-            if (!fileHandle) return;
+          const saveToLinkedHtml = async () => {
+            if (!htmlFileHandle) return;
             try {
-              const writable = await fileHandle.createWritable();
-              await writable.write(JSON.stringify(data, null, 2));
+              // Read the current file on disk to get the clean template
+              const file = await htmlFileHandle.getFile();
+              let text = await file.text();
+              const dataStr = JSON.stringify(data, null, 2);
+              
+              // Find and replace ONLY the JSON data inside the script tag
+              if (text.includes('id="app-data"')) {
+                  text = text.replace(
+                      /(<script\s+type="application\/json"\s+id="app-data">)[\s\S]*?(<\/script>)/,
+                      `$1\n${dataStr}\n$2`
+                  );
+              } else {
+                  showToast("Error: The linked file is missing the <script id='app-data'> block. Are you sure it's the correct file?");
+                  return;
+              }
+
+              // Overwrite the file on the user's hard drive
+              const writable = await htmlFileHandle.createWritable();
+              await writable.write(text);
               await writable.close();
-              showToast(`Changes successfully saved directly to ${fileHandle.name}!`);
-            } catch (error) {
-              console.error(error);
-              showToast("Error saving to file. You may need to re-link it if browser permissions expired.");
+              showToast(`App successfully saved directly to ${htmlFileHandle.name}!`);
+            } catch (err) {
+              console.error(err);
+              showToast("Save failed. Browser permissions may have expired, please re-link the file.");
+              setHtmlFileHandle(null);
             }
           };
 
-
-          // --- Git Sync Logic ---
-          const utf8ToBase64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
-          const base64ToUtf8 = (str) => decodeURIComponent(escape(window.atob(str)));
-
-          const parseRepoUrl = (url) => {
-            let owner = '', repo = '', type = 'unknown';
+          const downloadSelfHtml = async () => {
+            let htmlText = '';
             try {
-              const cleanUrl = url.replace(/\.git$/, '').trim();
-              if (cleanUrl.includes('github.com')) {
-                type = 'github';
-                const parts = cleanUrl.includes('github.com:') ? cleanUrl.split('github.com:')[1].split('/') : cleanUrl.split('github.com/')[1].split('/');
-                owner = parts[0];
-                repo = parts[1];
-              } else if (cleanUrl.includes('bitbucket.org')) {
-                type = 'bitbucket';
-                const parts = cleanUrl.split('bitbucket.org/')[1].split('/');
-                owner = parts[0];
-                repo = parts[1];
+              // Attempt to fetch clean self (works best on http/https)
+              const res = await fetch(window.location.href);
+              if (res.ok) {
+                htmlText = await res.text();
+              } else {
+                throw new Error("Fetch failed");
               }
-            } catch (e) { }
-            return { type, owner, repo };
-          };
-
-          const pullFromRepo = async () => {
-            const { type, owner, repo } = parseRepoUrl(repoUrl);
-            if (type === 'unknown' || !owner || !repo) return setSyncStatus('Error: Invalid Repo URI (Requires github.com or bitbucket.org URL)');
-            if (!repoToken) return setSyncStatus('Error: Token/App Password is required');
-            if (type === 'bitbucket' && !repoUser) return setSyncStatus('Error: Bitbucket requires your exact Username');
-            
-            setIsSyncing(true);
-            setSyncStatus('Authenticating and pulling data...');
-            
-            try {
-              const cleanUser = repoUser.trim();
-              const cleanToken = repoToken.trim();
-              const cleanPath = repoFilePath.trim();
-              const cleanBranch = repoBranch.trim();
-              
-              const authHeader = (type === 'bitbucket' || cleanUser) 
-                ? `Basic ${window.btoa(`${cleanUser}:${cleanToken}`)}` 
-                : `Bearer ${cleanToken}`;
-
-              let contentStr = '';
-
-              if (type === 'github') {
-                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}?ref=${cleanBranch}`, {
-                  headers: { Authorization: authHeader, Accept: 'application/vnd.github.v3+json' }
-                });
-                if (res.status === 401) throw new Error('401 Unauthorized (Check Token & Username)');
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const result = await res.json();
-                contentStr = base64ToUtf8(result.content);
-              } 
-              else if (type === 'bitbucket') {
-                const res = await fetch(`https://api.bitbucket.org/2.0/repositories/${owner}/${repo}/src/${cleanBranch}/${cleanPath}`, {
-                  headers: { Authorization: authHeader }
-                });
-                if (res.status === 401) throw new Error('401 Unauthorized (Verify Username and App Password)');
-                if (!res.ok) throw new Error(`HTTP Error ${res.status} (File or branch may not exist)`);
-                contentStr = await res.text();
-              }
-
-              const parsed = JSON.parse(contentStr);
-              setData(parsed);
-              setJsonInput(JSON.stringify(parsed, null, 2));
-              showToast('Successfully pulled data from repository!');
-              setSyncStatus('Successfully pulled data!');
-              setTimeout(() => setSyncStatus(''), 4000);
             } catch (e) {
-              setSyncStatus(`Pull failed: ${e.message}`);
-            }
-            setIsSyncing(false);
-          };
-
-          const pushToRepo = async () => {
-            const { type, owner, repo } = parseRepoUrl(repoUrl);
-            if (type === 'unknown' || !owner || !repo) return setSyncStatus('Error: Invalid Repo URI');
-            if (!repoToken) return setSyncStatus('Error: Token/App Password is required');
-            if (type === 'bitbucket' && !repoUser) return setSyncStatus('Error: Bitbucket requires your exact Username');
-
-            setIsSyncing(true);
-            setSyncStatus('Authenticating and preparing push...');
-            
-            try {
-              const cleanUser = repoUser.trim();
-              const cleanToken = repoToken.trim();
-              const cleanPath = repoFilePath.trim();
-              const cleanBranch = repoBranch.trim();
+              // Fallback for file:// protocol without a server
+              const docClone = document.documentElement.cloneNode(true);
+              const root = docClone.querySelector('#root');
+              if (root) root.innerHTML = ''; // Clear React injection
+              docClone.querySelectorAll('style[id="tailwindcss"], style[data-styled]').forEach(s => s.remove());
               
-              const authHeader = (type === 'bitbucket' || cleanUser) 
-                ? `Basic ${window.btoa(`${cleanUser}:${cleanToken}`)}` 
-                : `Bearer ${cleanToken}`;
-
-              const contentStr = JSON.stringify(data, null, 2);
-
-              if (type === 'github') {
-                const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}?ref=${cleanBranch}`, {
-                  headers: { Authorization: authHeader, Accept: 'application/vnd.github.v3+json' }
-                });
-                let sha = null;
-                if (getRes.ok) {
-                  const getResult = await getRes.json();
-                  sha = getResult.sha;
-                }
-                
-                setSyncStatus('Pushing changes to GitHub...');
-                const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}`, {
-                  method: 'PUT',
-                  headers: { Authorization: authHeader, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    message: `Update map data via Flowchart App`,
-                    content: utf8ToBase64(contentStr),
-                    sha: sha,
-                    branch: cleanBranch
-                  })
-                });
-                if (putRes.status === 401) throw new Error('401 Unauthorized (Check Token & Username)');
-                if (!putRes.ok) throw new Error(`HTTP ${putRes.status}`);
-              } 
-              else if (type === 'bitbucket') {
-                setSyncStatus('Pushing changes to Bitbucket...');
-                const formData = new FormData();
-                formData.append('message', 'Update map data via Flowchart App');
-                formData.append('branch', cleanBranch);
-                formData.append(cleanPath, new Blob([contentStr], { type: 'text/plain' }), cleanPath);
-
-                const postRes = await fetch(`https://api.bitbucket.org/2.0/repositories/${owner}/${repo}/src`, {
-                  method: 'POST',
-                  headers: { Authorization: authHeader },
-                  body: formData
-                });
-                if (postRes.status === 401) throw new Error('401 Unauthorized (Check App Password "Write" permissions)');
-                if (!postRes.ok) throw new Error(`HTTP ${postRes.status}`);
-              }
-
-              showToast('Successfully pushed changes to repository!');
-              setSyncStatus('Successfully pushed changes!');
-              setTimeout(() => setSyncStatus(''), 4000);
-            } catch (e) {
-              setSyncStatus(`Push failed: ${e.message}`);
+              htmlText = "<!DOCTYPE html>\n<html lang=\"en\">\n" + docClone.outerHTML + "\n</html>";
             }
-            setIsSyncing(false);
+            
+            // Replace the data block with the current state data
+            const dataStr = JSON.stringify(data, null, 2);
+            if (htmlText.includes('id="app-data"')) {
+                htmlText = htmlText.replace(
+                    /(<script\s+type="application\/json"\s+id="app-data">)[\s\S]*?(<\/script>)/,
+                    `$1\n${dataStr}\n$2`
+                );
+            }
+
+            // Trigger standard browser download
+            const blob = new Blob([htmlText], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Flowchart_App.html';
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast("Self-contained HTML app downloaded successfully!");
           };
 
+          const applyManualJson = () => {
+            try {
+              setData(JSON.parse(jsonInput));
+              setShowDataEditor(false);
+              showToast("Manual JSON applied successfully.");
+            } catch(e) {
+              showToast("Invalid JSON format. Check for syntax errors.");
+            }
+          };
+
+          // --- Canvas Panning Handlers ---
+          const handleMouseDown = (e) => {
+            if (e.target.closest('.node-card')) return;
+            setIsDragging(true);
+            setDragStart({ x: e.clientX - transform.x, y: e.clientY - transform.y });
+          };
+          const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            setTransform(prev => ({ ...prev, x: e.clientX - dragStart.x, y: e.clientY - dragStart.y }));
+          };
+          const handleMouseUp = () => setIsDragging(false);
+
+          const zoomIn = () => setTransform(p => ({ ...p, scale: Math.min(p.scale + 0.2, 3) }));
+          const zoomOut = () => setTransform(p => ({ ...p, scale: Math.max(p.scale - 0.2, 0.2) }));
+          const resetView = () => setTransform({ x: 100, y: 100, scale: 0.85 });
 
           // --- AI Chat Logic ---
           const saveApiKey = (key) => {
             setApiKey(key);
             localStorage.setItem('gemini_api_key', key);
             setShowApiKeySetup(false);
+            showToast("API Key saved locally.");
           };
 
           const handleSendChatMessage = async () => {
@@ -470,7 +456,7 @@
               ${dataContext}
               
               Answer the user's question accurately based ONLY on the data provided above. 
-              Be concise, professional, and format your response cleanly (use bullet points if needed).`;
+              Be concise, professional, and format your response cleanly (use HTML line breaks <br/> or bold <strong> tags if needed).`;
 
               const historyContents = chatMessages.slice(1).map(msg => ({
                 role: msg.role === 'ai' ? 'model' : 'user',
@@ -507,7 +493,6 @@
             }
           };
 
-
           // --- Node Modifiers ---
           const toggleNode = (nodeId, e) => {
             e.stopPropagation();
@@ -520,9 +505,12 @@
 
           const deleteNode = (nodeId, e) => {
             e.stopPropagation();
-            if (nodeId === 'root') { showToast("The root module cannot be deleted."); return; }
+            if (nodeId === 'root') { 
+              showToast("The root module cannot be deleted."); 
+              return; 
+            }
             
-            // Replaces window.confirm
+            // Custom Confirm Dialog
             setConfirmAction({
               message: "Are you sure you want to delete this module and its attached sub-modules?",
               onConfirm: () => {
@@ -532,7 +520,7 @@
                 };
                 setData(prev => ({ ...prev, children: deleteRecursive(prev.children) }));
                 setConfirmAction(null);
-                showToast("Node deleted.");
+                showToast("Node successfully deleted.");
               }
             });
           };
@@ -546,6 +534,7 @@
             };
             setData(updateRecursive(data));
             setEditingNode(null);
+            showToast("Node updated.");
           };
 
           const openAddNode = (node, e) => { e.stopPropagation(); setAddingNodeParent(node); setNewNodeForm({ label: '', info: '' }); };
@@ -560,6 +549,7 @@
             setData(updateRecursive(data));
             setExpandedNodes(prev => new Set(prev).add(addingNodeParent.id));
             setAddingNodeParent(null);
+            showToast("New node added.");
           };
 
           const openInfoNode = (node, e) => {
@@ -570,61 +560,6 @@
             setNewCountryName('');
           };
 
-
-          // --- Search and Flat Data Mapping ---
-          const allNodesFlat = useMemo(() => {
-            const flat = [];
-            const traverse = (node, pathLabel) => {
-              const fullLabel = pathLabel ? `${pathLabel} > ${node.label}` : node.label;
-              let searchableText = `${node.label} ${node.info || ''}`;
-              if (node.countries) {
-                 node.countries.forEach(c => { searchableText += ` ${c.name} ${c.accounts.join(' ')}`; });
-              }
-              flat.push({ ...node, fullLabel, searchableText: searchableText.toLowerCase() });
-              if (node.children) { node.children.forEach(c => traverse(c, fullLabel)); }
-            };
-            if (data) traverse(data, '');
-            return flat;
-          }, [data]);
-
-          const searchResults = useMemo(() => {
-            if (!searchQuery.trim()) return [];
-            const q = searchQuery.toLowerCase();
-            return allNodesFlat.filter(n => n.searchableText.includes(q)).slice(0, 8);
-          }, [searchQuery, allNodesFlat]);
-
-          const getPathToNode = (root, targetId) => {
-            if (root.id === targetId) return [root.id];
-            if (root.children) {
-              for (let child of root.children) {
-                const path = getPathToNode(child, targetId);
-                if (path) return [root.id, ...path];
-              }
-            }
-            return null;
-          };
-
-          const handleSuggestionClick = (nodeId) => {
-            const path = getPathToNode(data, nodeId);
-            if (path) {
-              setExpandedNodes(prev => {
-                const next = new Set(prev);
-                path.forEach(id => next.add(id));
-                return next;
-              });
-              setTargetNodeId(nodeId);
-
-              if (autoOpenNode) {
-                const targetNode = allNodesFlat.find(n => n.id === nodeId);
-                if (targetNode) openInfoNode(targetNode, null);
-              }
-            }
-            setSearchQuery('');
-            setIsDropdownOpen(false);
-          };
-
-
-          // --- Data Mutators (Accounts/Countries) ---
           const addCountryToInfoNode = () => {
             if (!newCountryName.trim()) return;
             const newCountry = { name: newCountryName, accounts: [`ACC-${Math.floor(1000 + Math.random() * 9000)}`, `ACC-${Math.floor(1000 + Math.random() * 9000)}`] };
@@ -639,6 +574,7 @@
             };
             setData(updateRecursive(data));
             setNewCountryName('');
+            showToast(`Added country ${newCountryName}`);
           };
 
           const toggleCountryExpand = (countryName) => {
@@ -693,54 +629,57 @@
             setNewAccountInputs(prev => ({ ...prev, [countryName]: '' }));
           };
 
-
-          // --- Local File Download / Upload (Legacy) ---
-          const handleFileUpload = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              try {
-                const parsed = JSON.parse(event.target.result);
-                setData(parsed);
-                setJsonInput(JSON.stringify(parsed, null, 2));
-                showToast("File uploaded and applied successfully");
-              } catch (error) { 
-                showToast("Error parsing file. Please ensure valid JSON data."); 
+          // --- Search and Flat Data Mapping ---
+          const allNodesFlat = useMemo(() => {
+            const flat = [];
+            const traverse = (node, pathLabel) => {
+              const fullLabel = pathLabel ? `${pathLabel} > ${node.label}` : node.label;
+              let searchableText = `${node.label} ${node.info || ''}`;
+              if (node.countries) {
+                 node.countries.forEach(c => { searchableText += ` ${c.name} ${c.accounts.join(' ')}`; });
               }
+              flat.push({ ...node, fullLabel, searchableText: searchableText.toLowerCase() });
+              if (node.children) { node.children.forEach(c => traverse(c, fullLabel)); }
             };
-            reader.readAsText(file);
-            e.target.value = null;
+            if (data) traverse(data, '');
+            return flat;
+          }, [data]);
+
+          const searchResults = useMemo(() => {
+            if (!searchQuery.trim()) return [];
+            const q = searchQuery.toLowerCase();
+            return allNodesFlat.filter(n => n.searchableText.includes(q)).slice(0, 8);
+          }, [searchQuery, allNodesFlat]);
+
+          const getPathToNode = (root, targetId) => {
+            if (root.id === targetId) return [root.id];
+            if (root.children) {
+              for (let child of root.children) {
+                const path = getPathToNode(child, targetId);
+                if (path) return [root.id, ...path];
+              }
+            }
+            return null;
           };
 
-          const handleFileDownload = () => {
-            const dataStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([dataStr], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = '1View Map Data.txt';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-          };
+          const handleSuggestionClick = (nodeId) => {
+            const path = getPathToNode(data, nodeId);
+            if (path) {
+              setExpandedNodes(prev => {
+                const next = new Set(prev);
+                path.forEach(id => next.add(id));
+                return next;
+              });
+              setTargetNodeId(nodeId);
 
-          // --- Canvas Interactions ---
-          const handleMouseDown = (e) => {
-            if (e.target.closest('.node-card')) return;
-            setIsDragging(true);
-            setDragStart({ x: e.clientX - transform.x, y: e.clientY - transform.y });
+              if (autoOpenNode) {
+                const targetNode = allNodesFlat.find(n => n.id === nodeId);
+                if (targetNode) openInfoNode(targetNode, null);
+              }
+            }
+            setSearchQuery('');
+            setIsDropdownOpen(false);
           };
-          const handleMouseMove = (e) => {
-            if (!isDragging) return;
-            setTransform(prev => ({ ...prev, x: e.clientX - dragStart.x, y: e.clientY - dragStart.y }));
-          };
-          const handleMouseUp = () => setIsDragging(false);
-
-          const zoomIn = () => setTransform(p => ({ ...p, scale: Math.min(p.scale + 0.2, 3) }));
-          const zoomOut = () => setTransform(p => ({ ...p, scale: Math.max(p.scale - 0.2, 0.2) }));
-          const resetView = () => setTransform({ x: 100, y: 100, scale: 0.85 });
 
           // --- Layout Algorithm ---
           const { nodes, edges } = useMemo(() => {
@@ -924,7 +863,7 @@
                 </div>
 
                 {/* --- AI Chatbot Widget --- */}
-                <div className="absolute bottom-6 right-6 z-40 flex flex-col items-end">
+                <div className="absolute bottom-6 right-6 z-40 flex flex-col items-end pointer-events-auto">
                   {isChatOpen && (
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 w-[350px] h-[500px] mb-4 flex flex-col overflow-hidden transition-all duration-300">
                       <div className="bg-blue-600 px-4 py-3 text-white flex justify-between items-center shrink-0">
@@ -1174,106 +1113,49 @@
                   </div>
                 )}
 
-                {/* --- Manage Data Modal --- */}
+                {/* --- Manage Data Modal (Self-Modifying System) --- */}
                 {showDataEditor && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col overflow-hidden transition-colors">
                       <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-900">
-                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Flowchart Data Management</h2>
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">App Data Management</h2>
                         <button onClick={() => setShowDataEditor(false)} className="text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"><X size={24} /></button>
                       </div>
                       
-                      <div className="p-6 flex-1 flex flex-col gap-4 overflow-y-auto">
+                      <div className="p-6 flex-1 flex flex-col gap-5 overflow-y-auto">
                         
-                        {/* Repository Sync Section */}
-                        <div className="flex flex-col gap-3 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
+                        {/* Direct File Linking Section */}
+                        <div className="flex flex-col gap-3 bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800">
                           <div>
-                            <h3 className="font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
-                              <Github size={18} /> Git Repository Sync
+                            <h3 className="font-semibold text-indigo-800 dark:text-indigo-300 flex items-center gap-2">
+                              <Database size={18} /> Self-Modifying HTML File
                             </h3>
-                            <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                              Manage your JSON data directly from a GitHub or Bitbucket repository.
+                            <p className="text-sm text-indigo-600 dark:text-indigo-400 mt-1">
+                              This application acts as its own database. By linking this exact HTML file below, every time you click save, the file on your computer will securely rewrite itself with your updated data!
                             </p>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                            <div className="md:col-span-2">
-                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Repo URI / URL</label>
-                              <input type="text" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} placeholder="https://bitbucket.org/owner/repo" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Bitbucket Username (Profile ID)</label>
-                              <input type="text" value={repoUser} onChange={(e) => setRepoUser(e.target.value)} placeholder="e.g., shaamkarthikn" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">App Password / Token</label>
-                              <input type="password" value={repoToken} onChange={(e) => setRepoToken(e.target.value)} placeholder="Paste App Password here" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Target File Name / Path</label>
-                              <input type="text" value={repoFilePath} onChange={(e) => setRepoFilePath(e.target.value)} placeholder="1View Map Data.txt" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Branch</label>
-                              <input type="text" value={repoBranch} onChange={(e) => setRepoBranch(e.target.value)} placeholder="main" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-between gap-4 mt-2 pt-3 border-t border-blue-200 dark:border-blue-800/50">
-                            <div className="text-sm font-medium text-red-600 dark:text-red-400 min-h-[20px] flex-1 max-w-[60%]">
-                              {syncStatus}
-                            </div>
-                            <div className="flex gap-2">
-                              <button disabled={isSyncing} onClick={pullFromRepo} className="px-4 py-2 bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-600 hover:bg-blue-100 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50">
-                                <CloudDownload size={16} /> Pull (Load)
-                              </button>
-                              <button disabled={isSyncing} onClick={pushToRepo} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50">
-                                <CloudUpload size={16} /> Push (Save)
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Local File Sync Section */}
-                        <div className="flex flex-col gap-3 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800">
-                          <div>
-                            <h3 className="font-semibold text-indigo-800 dark:text-indigo-300 flex items-center gap-2">
-                              <Database size={18} /> Direct Local File Sync
-                            </h3>
-                            <p className="text-sm text-indigo-600 dark:text-indigo-400 mt-1">
-                              Link a file on your computer to read and write directly to it without downloading copies (Chrome/Edge only).
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-2 items-center mt-1">
-                            <button onClick={linkLocalFile} className="px-4 py-2 bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-600 hover:bg-indigo-100 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                              <Upload size={16} /> {fileHandle ? 'Change Linked File' : 'Link Local File'}
+                          <div className="flex flex-wrap items-center gap-3 mt-2">
+                            <button onClick={linkLocalHtmlFile} className="px-4 py-2.5 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm">
+                              <Upload size={16} /> {htmlFileHandle ? 'Change Linked File' : 'Link This HTML File'}
                             </button>
                             
-                            {fileHandle && (
-                              <button onClick={saveToLinkedFile} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                                <Download size={16} /> Save to Linked File
+                            {htmlFileHandle && (
+                              <button onClick={saveToLinkedHtml} className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-md">
+                                <Download size={16} /> Save Changes Directly
                               </button>
                             )}
                             
-                            {!fileHandle && (
-                              <button onClick={handleFileDownload} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2" title="Standard download">
-                                <Download size={16} /> Download File (Legacy)
-                              </button>
-                            )}
-
-                            <input type="file" accept=".txt,.json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} />
-                            
-                            {!fileHandle && (
-                              <button onClick={() => fileInputRef.current.click()} className="px-4 py-2 bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-600 hover:bg-indigo-100 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                                <Upload size={16} /> Legacy Upload
-                              </button>
-                            )}
+                            <button onClick={downloadSelfHtml} className="px-4 py-2.5 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm" title="Standard browser download">
+                              <Download size={16} /> Download as New HTML
+                            </button>
                           </div>
-                          {fileHandle && <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">✓ Currently linked to: {fileHandle.name}</p>}
+                          {htmlFileHandle && <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1"><Check size={14} /> Actively linked to: {htmlFileHandle.name}</p>}
                         </div>
 
+                        {/* Raw JSON Editor */}
                         <div className="flex justify-between items-center mt-2">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Or, edit the JSON structure manually below:</p>
+                          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Raw JSON Editor</p>
                         </div>
                         <textarea 
                           value={jsonInput} 
@@ -1283,29 +1165,24 @@
                         />
                       </div>
 
-                      <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 flex justify-between items-center transition-colors shrink-0">
-                        <button onClick={() => { 
-                          setConfirmAction({
-                            message: 'Are you sure you want to reset to the default template? Your current layout will be lost.',
-                            onConfirm: () => {
-                              setData(defaultData); 
-                              setJsonInput(JSON.stringify(defaultData, null, 2)); 
-                              setConfirmAction(null);
-                              showToast("Reset to defaults");
-                            }
-                          });
-                        }} className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded-lg text-sm font-medium transition-colors flex items-center gap-2" title="Reset to default template"><X size={16} /> Reset Default</button>
+                      <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 flex justify-between items-center transition-colors">
+                        <div className="flex gap-2">
+                          <button onClick={() => {
+                            setConfirmAction({
+                              message: "Are you sure you want to reset to the default empty template? This will erase all current map data in the viewer.",
+                              onConfirm: () => {
+                                const fallback = { id: 'root', label: 'System Modules', children: [] };
+                                setData(fallback);
+                                setJsonInput(JSON.stringify(fallback, null, 2));
+                                setConfirmAction(null);
+                                showToast("Reset to default template.");
+                              }
+                            });
+                          }} className="text-xs text-red-500 hover:underline">Reset Template</button>
+                        </div>
                         <div className="flex gap-3">
-                          <button onClick={() => setShowDataEditor(false)} className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">Cancel</button>
-                          <button onClick={() => { 
-                            try { 
-                              setData(JSON.parse(jsonInput)); 
-                              setShowDataEditor(false); 
-                              showToast("Data successfully applied."); 
-                            } catch(e) { 
-                              showToast("Error: Invalid JSON format"); 
-                            } 
-                          }} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Apply Text Changes</button>
+                          <button onClick={() => setShowDataEditor(false)} className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">Close</button>
+                          <button onClick={applyManualJson} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Apply Text Changes</button>
                         </div>
                       </div>
                     </div>
@@ -1316,7 +1193,7 @@
           );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
+        const root = createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
 </body>
