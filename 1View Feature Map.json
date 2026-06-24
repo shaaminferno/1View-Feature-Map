@@ -149,7 +149,7 @@
             {
               "id": "node-1782287943534",
               "label": "Send POS",
-              "info": "",
+              "info": "This feature comes under resolved service order dropdown and we can click on View Proof Of Service button to get a preview of Service Order. We also have option to send to any emails external by providing the recipient email under the text box provided below the preview image. Depending on the countries we may have to select in which language we need to send in case of bilingual countries ",
               "children": [],
               "_h": 109
             }
