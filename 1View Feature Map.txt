@@ -1,0 +1,148 @@
+{
+  "id": "root",
+  "label": "System Modules",
+  "type": "root",
+  "info": "Main application system",
+  "children": [
+    {
+      "id": "m1",
+      "label": "Customer Search",
+      "info": "Module for finding and filtering customer accounts.",
+      "children": [
+        {
+          "id": "m1-f1",
+          "label": "Search with multiple filters",
+          "info": "Allows complex queries to find exact customer matches.",
+          "_h": 109
+        },
+        {
+          "id": "m1-f2",
+          "label": "View only premise(Account level dropdown): Site ID should be visible",
+          "info": "Dropdown configuration for premises.",
+          "_h": 109
+        },
+        {
+          "id": "m1-f3",
+          "label": "View Premise button for Account level refs, should display premises and relavant service covers available for the refs",
+          "info": "Action button to view detailed service coverages.",
+          "_h": 109
+        },
+        {
+          "id": "m1-f4",
+          "label": "Pagination, selecting no of rows visible per page and check does navigate to next page",
+          "info": "Table pagination controls.",
+          "_h": 109
+        }
+      ],
+      "_h": 436
+    },
+    {
+      "id": "m2",
+      "label": "Create Interaction",
+      "info": "Module for initiating and managing customer interactions.",
+      "children": [
+        {
+          "id": "m2-f1",
+          "label": "View Open Interactions Popup",
+          "info": "Displays currently active/open interactions in a modal.",
+          "_h": 109
+        },
+        {
+          "id": "m2-f2",
+          "label": "Open interactions dropdown for details",
+          "info": "Select an interaction to see full details.",
+          "_h": 109
+        },
+        {
+          "id": "m2-f3",
+          "label": "Dont create interaction",
+          "info": "Cancel or bypass interaction creation.",
+          "_h": 109
+        },
+        {
+          "id": "m2-f4",
+          "label": "Amend interaction",
+          "info": "Edit an existing interaction record.",
+          "_h": 109
+        },
+        {
+          "id": "m2-f5",
+          "label": "Create interaction",
+          "info": "Finalize and save a new interaction.",
+          "_h": 109
+        }
+      ],
+      "_h": 545
+    },
+    {
+      "id": "m3",
+      "label": "Customer 360",
+      "info": "Comprehensive view of all customer-related data.",
+      "children": [
+        {
+          "id": "m3-f1",
+          "label": "View all details for Location/Bill To",
+          "info": "Location and billing information overview.",
+          "_h": 109
+        },
+        {
+          "id": "m3-f2",
+          "label": "Edit Contacts ( Depending countries Multi Contact will be available IT/PT)",
+          "info": "Manage customer contact points based on region.",
+          "_h": 109
+        },
+        {
+          "id": "m3-f3",
+          "label": "Customer Name fully visible and Business logo check",
+          "info": "UI verification for branding and names.",
+          "_h": 109
+        },
+        {
+          "id": "m3-f4",
+          "label": "Touchpoints details need to compare with Icabs",
+          "info": "Data verification step against external system.",
+          "_h": 109
+        },
+        {
+          "id": "m3-f5",
+          "label": "Navigation to relevant accounts ( Separate Scenario needed)",
+          "info": "Links to related organizational accounts.",
+          "_h": 109
+        },
+        {
+          "id": "m3-f6",
+          "label": "Invoice Tab",
+          "info": "Financial interaction and billing histories.",
+          "children": [
+            {
+              "id": "m3-f6-s1",
+              "label": "Check Single invoice by View/Send invoice button",
+              "info": "Action to preview or email a specific invoice.",
+              "_h": 109
+            },
+            {
+              "id": "m3-f6-s2",
+              "label": "Check Dispute invoice icon when dispute invoice workflow creat...",
+              "info": "Visual indicator for ongoing disputes.",
+              "_h": 109
+            },
+            {
+              "id": "m3-f6-s3",
+              "label": "Check Single Credit Notes by View/Send Credit notes button",
+              "info": "Action to preview or email specific credit notes.",
+              "_h": 109
+            },
+            {
+              "id": "m3-f6-s4",
+              "label": "Check Send Multiple Credit Notes",
+              "info": "Batch processing for credit notes.",
+              "_h": 109
+            },
+            ,
+          "_h": 545
+        }
+      ],
+      "_h": 1090
+    }
+  ]
+}
