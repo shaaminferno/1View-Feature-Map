@@ -137,8 +137,8 @@
               "label": "Check Send Multiple Credit Notes",
               "info": "Batch processing for credit notes.",
               "_h": 109
-            },
-            ,
+            }
+          ],
           "_h": 545
         }
       ],
