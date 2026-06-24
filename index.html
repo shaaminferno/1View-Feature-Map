@@ -185,6 +185,11 @@
         const Trash = (p) => <Icon {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></Icon>;
         const Search = (p) => <Icon {...p}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
         
+        // GitHub Icons
+        const Github = (p) => <Icon {...p}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></Icon>;
+        const CloudDownload = (p) => <Icon {...p}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></Icon>;
+        const CloudUpload = (p) => <Icon {...p}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></Icon>;
+
         // Chat Icons
         const MessageCircle = (p) => <Icon {...p}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></Icon>;
         const Send = (p) => <Icon {...p}><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></Icon>;
@@ -228,11 +233,18 @@
           const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
           const containerRef = useRef(null);
           
-          // Self-Modifying App States
+          // Data Editor States
           const [showDataEditor, setShowDataEditor] = useState(false);
           const [jsonInput, setJsonInput] = useState('');
-          const [htmlFileHandle, setHtmlFileHandle] = useState(null);
           
+          // GitHub Sync States
+          const [repoUrl, setRepoUrl] = useState(() => localStorage.getItem('1view_repo_url') || '');
+          const [repoToken, setRepoToken] = useState(() => localStorage.getItem('1view_repo_token') || '');
+          const [repoBranch, setRepoBranch] = useState(() => localStorage.getItem('1view_repo_branch') || 'main');
+          const [repoFilePath, setRepoFilePath] = useState(() => localStorage.getItem('1view_repo_path') || '1View Map Data.txt');
+          const [syncStatus, setSyncStatus] = useState('');
+          const [isSyncing, setIsSyncing] = useState(false);
+
           const [editingNode, setEditingNode] = useState(null);
           const [editForm, setEditForm] = useState({ label: '', info: '' });
           
@@ -316,95 +328,107 @@
             return () => document.removeEventListener('mousedown', handleClickOutside);
           }, []);
 
-          // --- Self-Modifying HTML File System Logic ---
-          const linkLocalHtmlFile = async () => {
+          // Save GitHub settings to localStorage
+          useEffect(() => {
+            localStorage.setItem('1view_repo_url', repoUrl);
+            localStorage.setItem('1view_repo_token', repoToken);
+            localStorage.setItem('1view_repo_branch', repoBranch);
+            localStorage.setItem('1view_repo_path', repoFilePath);
+          }, [repoUrl, repoToken, repoBranch, repoFilePath]);
+
+          // --- GitHub Sync Logic ---
+          const utf8ToBase64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
+          const base64ToUtf8 = (str) => decodeURIComponent(escape(window.atob(str)));
+
+          const parseGithubUrl = (url) => {
+            let owner = '', repo = '';
             try {
-              if (!window.showOpenFilePicker) {
-                showToast("Your browser does not support Direct File Sync. Please use Google Chrome or Microsoft Edge.");
-                return;
-              }
-              const [handle] = await window.showOpenFilePicker({
-                types: [{ description: 'HTML App Files', accept: { 'text/html': ['.html', '.htm'] } }],
-              });
-              setHtmlFileHandle(handle);
-              showToast(`App actively linked to: ${handle.name}`);
-            } catch (error) {
-              if (error.name !== 'AbortError') {
-                console.error(error);
-                showToast("Error linking file.");
-              }
-            }
+              const cleanUrl = url.replace(/\.git$/, '').trim();
+              const parts = cleanUrl.includes('github.com:') ? cleanUrl.split('github.com:')[1].split('/') : cleanUrl.split('github.com/')[1].split('/');
+              owner = parts[0];
+              repo = parts[1];
+            } catch (e) { }
+            return { owner, repo };
           };
 
-          const saveToLinkedHtml = async () => {
-            if (!htmlFileHandle) return;
-            try {
-              // Read the current file on disk to get the clean template
-              const file = await htmlFileHandle.getFile();
-              let text = await file.text();
-              const dataStr = JSON.stringify(data, null, 2);
-              
-              // Find and replace ONLY the JSON data inside the script tag
-              if (text.includes('id="app-data"')) {
-                  text = text.replace(
-                      /(<script\s+type="application\/json"\s+id="app-data">)[\s\S]*?(<\/script>)/,
-                      `$1\n${dataStr}\n$2`
-                  );
-              } else {
-                  showToast("Error: The linked file is missing the <script id='app-data'> block. Are you sure it's the correct file?");
-                  return;
-              }
-
-              // Overwrite the file on the user's hard drive
-              const writable = await htmlFileHandle.createWritable();
-              await writable.write(text);
-              await writable.close();
-              showToast(`App successfully saved directly to ${htmlFileHandle.name}!`);
-            } catch (err) {
-              console.error(err);
-              showToast("Save failed. Browser permissions may have expired, please re-link the file.");
-              setHtmlFileHandle(null);
-            }
-          };
-
-          const downloadSelfHtml = async () => {
-            let htmlText = '';
-            try {
-              // Attempt to fetch clean self (works best on http/https)
-              const res = await fetch(window.location.href);
-              if (res.ok) {
-                htmlText = await res.text();
-              } else {
-                throw new Error("Fetch failed");
-              }
-            } catch (e) {
-              // Fallback for file:// protocol without a server
-              const docClone = document.documentElement.cloneNode(true);
-              const root = docClone.querySelector('#root');
-              if (root) root.innerHTML = ''; // Clear React injection
-              docClone.querySelectorAll('style[id="tailwindcss"], style[data-styled]').forEach(s => s.remove());
-              
-              htmlText = "<!DOCTYPE html>\n<html lang=\"en\">\n" + docClone.outerHTML + "\n</html>";
-            }
+          const pullFromGithub = async () => {
+            const { owner, repo } = parseGithubUrl(repoUrl);
+            if (!owner || !repo) return setSyncStatus('Error: Invalid GitHub Repo URI');
+            if (!repoToken) return setSyncStatus('Error: GitHub Token is required');
             
-            // Replace the data block with the current state data
-            const dataStr = JSON.stringify(data, null, 2);
-            if (htmlText.includes('id="app-data"')) {
-                htmlText = htmlText.replace(
-                    /(<script\s+type="application\/json"\s+id="app-data">)[\s\S]*?(<\/script>)/,
-                    `$1\n${dataStr}\n$2`
-                );
+            setIsSyncing(true);
+            setSyncStatus('Pulling data...');
+            try {
+              const cleanToken = repoToken.trim();
+              const cleanPath = repoFilePath.trim();
+              const cleanBranch = repoBranch.trim();
+              
+              const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}?ref=${cleanBranch}`, {
+                headers: { Authorization: `Bearer ${cleanToken}`, Accept: 'application/vnd.github.v3+json' }
+              });
+              
+              if (res.status === 401) throw new Error('401 Unauthorized (Check Token)');
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              
+              const result = await res.json();
+              const contentStr = base64ToUtf8(result.content);
+              const parsed = JSON.parse(contentStr);
+              setData(parsed);
+              setJsonInput(JSON.stringify(parsed, null, 2));
+              showToast('Successfully pulled data from GitHub!');
+              setSyncStatus('Successfully pulled data!');
+              setTimeout(() => setSyncStatus(''), 4000);
+            } catch (e) {
+              setSyncStatus(`Pull failed: ${e.message}`);
             }
+            setIsSyncing(false);
+          };
 
-            // Trigger standard browser download
-            const blob = new Blob([htmlText], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'Flowchart_App.html';
-            link.click();
-            URL.revokeObjectURL(url);
-            showToast("Self-contained HTML app downloaded successfully!");
+          const pushToGithub = async () => {
+            const { owner, repo } = parseGithubUrl(repoUrl);
+            if (!owner || !repo) return setSyncStatus('Error: Invalid GitHub Repo URI');
+            if (!repoToken) return setSyncStatus('Error: GitHub Token is required');
+
+            setIsSyncing(true);
+            setSyncStatus('Preparing to push...');
+            try {
+              const cleanToken = repoToken.trim();
+              const cleanPath = repoFilePath.trim();
+              const cleanBranch = repoBranch.trim();
+              const contentStr = JSON.stringify(data, null, 2);
+
+              // Get current SHA of the file
+              const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}?ref=${cleanBranch}`, {
+                headers: { Authorization: `Bearer ${cleanToken}`, Accept: 'application/vnd.github.v3+json' }
+              });
+              let sha = null;
+              if (getRes.ok) {
+                const getResult = await getRes.json();
+                sha = getResult.sha;
+              }
+
+              setSyncStatus('Pushing changes...');
+              const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}`, {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${cleanToken}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: `Update map data via Flowchart App`,
+                  content: utf8ToBase64(contentStr),
+                  sha: sha,
+                  branch: cleanBranch
+                })
+              });
+
+              if (putRes.status === 401) throw new Error('401 Unauthorized (Check Token)');
+              if (!putRes.ok) throw new Error(`HTTP ${putRes.status}`);
+
+              showToast('Successfully pushed changes to GitHub!');
+              setSyncStatus('Successfully pushed changes!');
+              setTimeout(() => setSyncStatus(''), 4000);
+            } catch (e) {
+              setSyncStatus(`Push failed: ${e.message}`);
+            }
+            setIsSyncing(false);
           };
 
           const applyManualJson = () => {
@@ -1124,33 +1148,49 @@
                       
                       <div className="p-6 flex-1 flex flex-col gap-5 overflow-y-auto">
                         
-                        {/* Direct File Linking Section */}
-                        <div className="flex flex-col gap-3 bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                        {/* GitHub Repository Sync Section */}
+                        <div className="flex flex-col gap-3 bg-blue-50 dark:bg-blue-900/20 p-5 rounded-xl border border-blue-100 dark:border-blue-800">
                           <div>
-                            <h3 className="font-semibold text-indigo-800 dark:text-indigo-300 flex items-center gap-2">
-                              <Database size={18} /> Self-Modifying HTML File
+                            <h3 className="font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
+                              <Github size={18} /> GitHub Repository Sync
                             </h3>
-                            <p className="text-sm text-indigo-600 dark:text-indigo-400 mt-1">
-                              This application acts as its own database. By linking this exact HTML file below, every time you click save, the file on your computer will securely rewrite itself with your updated data!
+                            <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
+                              Manage your JSON data directly from a GitHub repository using a Personal Access Token.
                             </p>
                           </div>
                           
-                          <div className="flex flex-wrap items-center gap-3 mt-2">
-                            <button onClick={linkLocalHtmlFile} className="px-4 py-2.5 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm">
-                              <Upload size={16} /> {htmlFileHandle ? 'Change Linked File' : 'Link This HTML File'}
-                            </button>
-                            
-                            {htmlFileHandle && (
-                              <button onClick={saveToLinkedHtml} className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-md">
-                                <Download size={16} /> Save Changes Directly
-                              </button>
-                            )}
-                            
-                            <button onClick={downloadSelfHtml} className="px-4 py-2.5 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm" title="Standard browser download">
-                              <Download size={16} /> Download as New HTML
-                            </button>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                            <div className="md:col-span-2">
+                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Repo URI / URL</label>
+                              <input type="text" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} placeholder="https://github.com/owner/repo" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Personal Access Token</label>
+                              <input type="password" value={repoToken} onChange={(e) => setRepoToken(e.target.value)} placeholder="ghp_xxxxxxxxxxxx" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Target File Name / Path</label>
+                              <input type="text" value={repoFilePath} onChange={(e) => setRepoFilePath(e.target.value)} placeholder="1View Map Data.txt" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">Branch</label>
+                              <input type="text" value={repoBranch} onChange={(e) => setRepoBranch(e.target.value)} placeholder="main" className="w-full p-2 text-sm border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            </div>
                           </div>
-                          {htmlFileHandle && <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1"><Check size={14} /> Actively linked to: {htmlFileHandle.name}</p>}
+
+                          <div className="flex flex-wrap items-center justify-between gap-4 mt-2 pt-3 border-t border-blue-200 dark:border-blue-800/50">
+                            <div className="text-sm font-medium text-red-600 dark:text-red-400 min-h-[20px] flex-1 max-w-[60%]">
+                              {syncStatus}
+                            </div>
+                            <div className="flex gap-2">
+                              <button disabled={isSyncing} onClick={pullFromGithub} className="px-4 py-2 bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-600 hover:bg-blue-100 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm">
+                                <CloudDownload size={16} /> Pull (Load)
+                              </button>
+                              <button disabled={isSyncing} onClick={pushToGithub} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50 shadow-md">
+                                <CloudUpload size={16} /> Push (Save)
+                              </button>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Raw JSON Editor */}
